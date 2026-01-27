@@ -1,0 +1,31 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: storage-api-php
+    container_name: storage-api-app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/var/www
+    networks:
+      - storage-network
+
+  db:
+    image: mysql:8.0
+    container_name: storage-api-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: storage_db
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: root
+    ports:
+      - "3306:3306"
+    networks:
+      - storage-network
+
+networks:
+  storage-network:
+    driver: bridge
