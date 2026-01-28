@@ -9,6 +9,7 @@ class ImageController extends Controller
 {
     /**
      * Auxiliar privado para gerar o caminho da pasta do usuário.
+     * MANTIDO: Responsável apenas pela estrutura de pastas interna no disco.
      */
     private function getUserPath($user)
     {
@@ -30,11 +31,13 @@ class ImageController extends Controller
             $file = $request->file('image');
             $fileName = time() . '_' . $file->getClientOriginalName();
             
+            // Grava no disco 'public' -> storage/app/public/src/usuario/...
             $filePath = $file->storeAs($path, $fileName, 'public');
 
             return response()->json([
                 'message' => 'Upload realizado com sucesso!',
-                'url' => asset('storage/' . $filePath),
+                // AJUSTE DE AMBIENTE: Força o prefixo /api/ que o link simbólico exige
+                'url' => url('api/storage/' . $filePath),
                 'filename' => $fileName
             ], 201);
         }
@@ -47,11 +50,12 @@ class ImageController extends Controller
         $user = $request->user();
         $path = $this->getUserPath($user);
 
-        // Lista arquivos da pasta do usuário no disco 'public'
+        // Busca os arquivos fisicamente no disco
         $files = Storage::disk('public')->files($path);
         
         $urls = array_map(function($file) {
-            return asset('storage/' . $file);
+            // AJUSTE DE AMBIENTE: Garante que a listagem também retorne URLs clicáveis
+            return url('api/storage/' . $file);
         }, $files);
 
         return response()->json([
@@ -63,6 +67,7 @@ class ImageController extends Controller
 
     public function destroy(Request $request, $filename)
     {
+        // O caminho para deletar deve ser o interno, sem o prefixo 'api/storage'
         $path = $this->getUserPath($request->user()) . '/' . $filename;
 
         if (Storage::disk('public')->exists($path)) {
