@@ -1,66 +1,62 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+🚀 Storage API - Estrutura de Storage & Deploy
+Bem-vindo!! Este projeto foi estruturado para ser leve, independente e, acima de tudo, autossuficiente.
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Diferente de muitos projetos que dependem de serviços de terceiros (como AWS S3 ou Cloudinary) e acabam gerando custos e complexidade extra, aqui nós decidimos manter a soberania dos dados. As imagens são suas, estão no seu servidor e sob o seu controle total! 🛠️
 
-## About Laravel
+🌟 A Vantagem do Self-Hosted Storage
+Ter as imagens no próprio servidor, acessíveis via link simbólico, traz uma praticidade absurda:
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Custo Zero: Sem taxas extras por armazenamento externo.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Privacidade: Seus dados não saem da sua hospedagem.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Velocidade: Menos requisições externas para o navegador processar.
 
-## Learning Laravel
+🛠️ Passo a Passo para o Deploy (Ambiente Hostinger)
+Se você está configurando este ambiente do zero ou passando para outro desenvolvedor, siga este guia:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+1. Estrutura de Pastas
+O projeto Laravel reside dentro de uma pasta chamada /api na raiz do seu site (public_html).
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Código do Laravel: public_html/api/storage-api/
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Acesso público: https://seudominio.com/api/
 
-## Laravel Sponsors
+2. Configuração do Banco de Dados
+Crie um Banco de Dados MySQL no painel da Hostinger.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+No arquivo .env (em storage-api), atualize: DB_DATABASE, DB_USERNAME e DB_PASSWORD.
 
-### Premium Partners
+Garanta que APP_URL=https://seudominio.com/api.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+3. Liberando o Poder do PHP
+No painel da Hostinger (PHP Configuration > PHP Options), habilite temporariamente:
 
-## Contributing
+symlink, exec e shell_exec.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+4. Permissões de Escrita (Vital! 🔑)
+Para que o Laravel consiga salvar imagens e gerenciar o sistema, o servidor precisa de permissão de escrita. No Gerenciador de Arquivos ou via FTP, aplique o Chmod 775 (ou 777, dependendo da configuração do servidor) nas seguintes pastas dentro de storage-api:
 
-## Code of Conduct
+storage/ (e todas as suas subpastas).
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+bootstrap/cache/.
 
-## Security Vulnerabilities
+Dica: Na Hostinger, você pode clicar com o botão direito na pasta e selecionar "Permissions" para aplicar recursivamente.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+5. Rodando os Scripts Utilitários (A "Mágica")
+Mova os arquivos da pasta /util para a pasta /api e execute-os via navegador:
 
-## License
+migrate.php: Cria as tabelas do banco de dados automaticamente.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+link.php: Cria o Link Simbólico (o túnel que faz as imagens aparecerem na web).
+
+🔒 Segurança em Primeiro Lugar
+Após confirmar que o login e o upload estão funcionando:
+
+Desative as funções symlink, exec e shell_exec no painel PHP.
+
+Delete os arquivos migrate.php e link.php da pasta /api.
+
+Mantenha as cópias de segurança sempre protegidas na pasta /util.
+
+Agora é só voar! Com as permissões ajustadas e os scripts rodados, você tem um backend robusto e imagens rápidas sob seu total comando. 🚀
